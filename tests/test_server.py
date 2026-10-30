@@ -252,7 +252,14 @@ class ApiTest(IngestCase):
         self.assertEqual(self.call("/api/summary", "POST")[0], 404)
 
     def test_index_is_served(self):
-        with urllib.request.urlopen(self.base + "/") as resp:
+        static = self.tmp / "static"
+        static.mkdir()
+        (static / "index.html").write_text("<title>agent-track</title>")
+        httpd = server.make_server("127.0.0.1", 0, self.tmp / "agenttrack.sqlite", self.ingestor, static=static)
+        threading.Thread(target=httpd.serve_forever, daemon=True).start()
+        self.addCleanup(httpd.server_close)
+        self.addCleanup(httpd.shutdown)
+        with urllib.request.urlopen(f"http://127.0.0.1:{httpd.server_address[1]}/") as resp:
             self.assertIn(b"<title>", resp.read())
 
     def raw(self, method, path, headers):

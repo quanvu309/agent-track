@@ -122,7 +122,7 @@ class ReadonlyUriTest(unittest.TestCase):
         import sqlite3
         from agenttrack.platform import readonly_uri
         with tempfile.TemporaryDirectory() as tmp:
-            db = Path(tmp) / "a?b#c%d" / "x.sqlite"
+            db = Path(tmp) / ("a#b%d" if os.name == "nt" else "a?b#c%d") / "x.sqlite"
             db.parent.mkdir()
             conn = sqlite3.connect(db)
             conn.execute("CREATE TABLE t (v)")
