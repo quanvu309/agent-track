@@ -1,0 +1,134 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
+
+/* Registry components carry dark: utilities. Tie them to a class that is never set so OS dark mode cannot restyle the page. */
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-raised: var(--raised);
+  --color-sidebar: var(--sidebar);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-status-working: var(--status-working);
+  --color-status-waiting: var(--status-waiting);
+  --color-status-ended: var(--status-ended);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* A quiet grey canvas with white panels and hairline borders. */
+:root {
+  color-scheme: light;
+  --radius: 0.5rem;
+  --background: #f7f7f8;
+  --sidebar: #f2f2f4;
+  --card: #ffffff;
+  --card-foreground: #16171a;
+  --raised: #f3f3f5;
+  --popover: #ffffff;
+  --popover-foreground: #16171a;
+  --foreground: #16171a;
+  --muted: #f0f0f2;
+  --muted-foreground: #6b6e76;
+  --faint: #9a9ca3;
+  --primary: #16171a;
+  --primary-foreground: #ffffff;
+  --secondary: #ededf0;
+  --secondary-foreground: #16171a;
+  --accent: #ededf0;
+  --accent-foreground: #16171a;
+  --destructive: #d64545;
+  --border: #e5e6e9;
+  --border-strong: #d4d6db;
+  --input: #e5e6e9;
+  --ring: #5e6ad2;
+  --brand: #5e6ad2;
+  --brand-soft: rgba(94, 106, 210, 0.12);
+  --status-working: #1f9d63;
+  --status-waiting: #c98a12;
+  --status-ended: #a0a2a9;
+  --claude: #d97757;
+  --codex: #10a37f;
+  --grok: #1a1a1a;
+  --neutral-series: #6b6e76;
+  /* Busiest hours: one warm hue, light to dark. Empty slots sit just off the card. */
+  --heat-0: #f3f1ee;
+  --heat-lo: #f1dccb;
+  --heat-hi: #a3442a;
+  --spark-past: #dcdde1;
+  --spark-today: #3a3c43;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.6); opacity: 0.55; }
+  70% { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  ::selection {
+    background: var(--brand-soft);
+    color: var(--foreground);
+  }
+  * {
+    scrollbar-width: thin;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 1px;
+  }
+  button, [role="button"] {
+    @apply cursor-pointer;
+  }
+}

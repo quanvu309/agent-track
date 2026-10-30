@@ -1,0 +1,3 @@
+{"sessionId":"G1","updatedAt":"2026-10-10T10:00:10.000000000+00:00","turns":[
+ {"turnNumber":1,"endedAt":"2026-10-10T10:00:05.000000000+00:00","inputTokens":1000,"outputTokens":100,"cachedReadTokens":600,"primaryModelId":"grok-x","modelUsage":{"grok-x":{"inputTokens":1000,"outputTokens":100,"cachedReadTokens":600}}},
+ {"turnNumber":2,"endedAt":"2026-10-10T10:00:09.000000000+00:00","inputTokens":500,"outputTokens":50,"cachedReadTokens":100,"primaryModelId":"grok-x","modelUsage":{"grok-x":{"inputTokens":300,"outputTokens":30,"cachedReadTokens":100},"grok-y":{"inputTokens":200,"outputTokens":20,"cachedReadTokens":0}}}]}

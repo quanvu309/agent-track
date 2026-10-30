@@ -1,0 +1,19 @@
+# agent-track
+
+> Local dashboard of AI coding agent activity (Claude Code, Codex, Grok; T3 Code titles). Python 3.11+, standard library only, serves on 127.0.0.1:3874.
+
+To install when a user says "install agent-track":
+
+1. `uvx --from agent-track-cli agent-track doctor --json` and read the JSON (adapters[] with id, detected, home, schema_ok, note, capabilities; plus platform, config and port).
+2. `pipx install agent-track-cli` (use `agent-track-cli[full]` on macOS or Windows when there is no process probe).
+3. `agent-track skill install`
+4. `agent-track install-service --enable` (Linux and macOS; on Windows it prints manual steps)
+5. Report the URL http://127.0.0.1:3874 and the detected agents.
+
+Never use --allow-remote unless asked: the data includes prompt text.
+
+## Docs
+
+- [SETUP.md](SETUP.md): full agent install steps and doctor JSON fields
+- [README.md](README.md): install, platforms, privacy, CLI, API
+- [docs/design.md](docs/design.md): adapter contract and platform layer

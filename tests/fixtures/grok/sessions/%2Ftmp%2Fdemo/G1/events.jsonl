@@ -1,0 +1,5 @@
+{"ts":"2026-10-10T10:00:01.000Z","type":"tool_started","tool_name":"read_file"}
+{"ts":"2026-10-10T10:00:02.000Z","type":"phase_changed","phase":"x"}
+{"ts":"2026-10-10T10:00:03.000Z","type":"tool_started","tool_name":"bash"}
+{"ts":"2026-10-10T10:00:01.250Z","type":"tool_completed","tool_name":"read_file","duration_ms":250,"outcome":"success"}
+{"ts":"2026-10-10T10:00:04.200Z","type":"tool_completed","tool_name":"bash","duration_ms":1200,"outcome":"error"}

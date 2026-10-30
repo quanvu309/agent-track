@@ -1,0 +1,2 @@
+{"timestamp":1791626402,"method":"session/update","params":{"sessionId":"C1","update":{"sessionUpdate":"subagent_spawned","child_session_id":"C2","parent_session_id":"C1"},"_meta":{"agentTimestampMs":1791626402000}}}
+{"timestamp":1791626420,"method":"_x.ai/session/update","params":{"sessionId":"C1","update":{"sessionUpdate":"turn_completed","usage":{"inputTokens":8888,"outputTokens":888,"cachedReadTokens":88}},"_meta":{"agentTimestampMs":1791626420000}}}
