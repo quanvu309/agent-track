@@ -1,0 +1,1 @@
+{"sessionId":"C1","updatedAt":"2026-10-10T10:00:06.000000000+00:00","turns":[{"turnNumber":1,"endedAt":"2026-10-10T10:00:05.000000000+00:00","inputTokens":9999,"outputTokens":999,"cachedReadTokens":99,"primaryModelId":"grok-x","modelUsage":{"grok-x":{"inputTokens":9999,"outputTokens":999,"cachedReadTokens":99}}}]}

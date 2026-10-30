@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-track-cli"
+version = "0.1.0"
+description = "Local dashboard of AI coding agent activity (Claude Code, Codex, Grok and more)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "rickvu" }]
+keywords = ["ai", "agents", "claude-code", "codex", "grok", "dashboard", "observability", "tokens"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Web Environment",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development",
+]
+dependencies = []
+
+[project.optional-dependencies]
+full = ["psutil>=5.9"]
+
+[project.urls]
+Homepage = "https://github.com/quanvu309/agent-track"
+Source = "https://github.com/quanvu309/agent-track"
+Issues = "https://github.com/quanvu309/agent-track/issues"
+
+[project.scripts]
+agent-track = "agenttrack.cli:main"
+agenttrack = "agenttrack.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agenttrack"]
+artifacts = ["src/agenttrack/static/**", "src/agenttrack/skill/**"]
+
+[tool.hatch.build.targets.sdist]
+artifacts = ["src/agenttrack/static/**"]
+include = ["src", "tests", "web", "README.md", "LICENSE", "SETUP.md"]
+exclude = ["web/node_modules"]
