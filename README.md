@@ -1,22 +1,47 @@
 # agent-track
 
-A local dashboard of AI coding agent activity. It reads the session files of Claude Code, Codex and Grok read-only, normalizes them into one SQLite store, and serves a single page plus a JSON API on `127.0.0.1:3874`. Nothing leaves your machine.
+One local dashboard for everything your AI coding agents are doing. See which sessions are working right now, what they cost in tokens, and which tools fail.
 
-Python 3.11+, standard library only. The optional `full` extra adds `psutil` for process and machine data on macOS and Windows.
+![Control center board with live Claude Code and Codex sessions](docs/screenshots/control-center-board.png)
 
-## Install
+## Why
+
+- **One view across agents.** Claude Code, Codex and Grok sessions land in one SQLite store, so you compare them instead of juggling three tools.
+- **Live, not just history.** It shows which sessions are working, idle or ended right now, with sub-agents, and how long they have been in that state.
+- **Local and read-only.** It reads your agents' session files and never writes to them. Nothing leaves your machine. Python 3.11+ and the standard library only.
+
+## Quickstart
 
 ```sh
-uvx --from agent-track-cli agent-track serve      # run without installing
-pipx install agent-track-cli                      # or install the CLI
-pipx install "agent-track-cli[full]"              # adds psutil for macOS and Windows process and machine data
+uvx --from agent-track-cli agent-track serve
 ```
 
-The PyPI project is `agent-track-cli`. The commands are `agent-track` and `agenttrack`. Do not run bare `pipx install agent-track` or `uvx agent-track`: that name belongs to an unrelated project.
+Then open http://127.0.0.1:3874. Run `agent-track doctor` first to see which agents were found.
 
-Then open http://127.0.0.1:3874. Run `agent-track doctor` first if you want to see which agents were found.
+To keep it installed instead, use `pipx install agent-track-cli`. Add the `full` extra (`pipx install "agent-track-cli[full]"`) for process and machine data on macOS and Windows.
 
-Let your own AI agent do it: tell it "install agent-track" and point it at [SETUP.md](SETUP.md) or [llms.txt](llms.txt).
+The PyPI project is `agent-track-cli`. The commands are `agent-track` and `agenttrack`. Do not run bare `pipx install agent-track` or `uvx agent-track`. That name belongs to a different project.
+
+Let your own agent do it. Tell it "install agent-track from https://github.com/quanvu309/agent-track and follow SETUP.md". [SETUP.md](SETUP.md) and [llms.txt](llms.txt) hold the steps.
+
+## Screenshots
+
+All screenshots use synthetic data from `dev/demo_data.py`. No real prompts or projects appear.
+
+![Control center list grouped by status](docs/screenshots/control-center-list.png)
+*Control center, list view. Threads grouped by status, with sub-agent counts and a live timeline of the last hour.*
+
+![Session detail with activity chart, tokens by model and tool calls](docs/screenshots/session-detail.png)
+*Session detail. Activity over time, tokens by model with cache share, tool calls with average duration, and the sub-agent timeline.*
+
+![Trends overview with per-agent token and activity cards](docs/screenshots/trends.png)
+*Trends. Per-agent sessions, fresh versus cached tokens, and hourly activity for today against yesterday.*
+
+![Usage treemap of tool calls and tokens by model](docs/screenshots/usage.png)
+*Usage. A treemap of tool calls per agent and input tokens by model.*
+
+![Sessions page with project breakdown and recent sessions table](docs/screenshots/sessions.png)
+*Sessions. Projects sized by tool calls and a searchable table of recent sessions on one shared clock.*
 
 ## Supported agents
 
@@ -29,21 +54,15 @@ Let your own AI agent do it: tell it "install agent-track" and point it at [SETU
 
 Fields an agent does not record are shown as empty, never guessed.
 
-OpenCode, Pi, Gemini and other tools are not built yet. To add one, an agent can follow the bundled `agent-track-adapter-author` skill (installed by `agent-track skill install`). An adapter is one file under `src/agenttrack/adapters/` that implements the `Adapter` contract in [docs/design.md](docs/design.md). Third parties can ship an adapter as a package that registers an entry point in the group `agent_track.adapters`. Validate it with `agent-track adapter check <path>`.
-
 ## Platform support
 
 | OS | Sessions, tokens, titles | Live state, Machine view |
 |---|---|---|
 | Linux | full | full, from stdlib `/proc` |
-| macOS | full | needs `agent-track-cli[full]` (psutil); otherwise approximate |
-| Windows | full | needs `agent-track-cli[full]` (psutil); otherwise approximate; no service installer |
+| macOS | full | needs `agent-track-cli[full]` (psutil), otherwise approximate |
+| Windows | full | needs `agent-track-cli[full]` (psutil), otherwise approximate, and no service installer |
 
-Why partial: macOS and Windows have no `/proc`, and the standard library cannot list processes or read memory and CPU. Without a probe, status falls back to file timestamps, is labelled approximate, and the Machine view is hidden. Data paths follow the OS: XDG on Linux, `~/Library/Application Support` on macOS, `%APPDATA%` on Windows. The default database lives in the OS data directory, never in a repository.
-
-## Privacy
-
-The store holds prompt text, tool names and token counts taken from your agents' session files. Treat the database as sensitive. `serve` binds `127.0.0.1` by default. A non-loopback `--host` requires `--allow-remote` and prints a warning that the data includes prompt text. The Machine sampler never reads command lines or environments, and never opens other users' processes.
+macOS and Windows have no `/proc`, and the standard library cannot list processes or read memory and CPU. Without a probe, status falls back to file timestamps and is labelled approximate. The Machine view is hidden. Data paths follow the OS. That means XDG on Linux, `~/Library/Application Support` on macOS and `%APPDATA%` on Windows. The default database lives in the OS data directory, never in a repository.
 
 ## CLI
 
@@ -55,12 +74,25 @@ agent-track install-service     systemd user unit (Linux) or launchd plist (macO
                                 [--port N] [--dry-run] [--enable] [--uninstall]
 agent-track skill install       copy the bundled skills into ~/.claude/skills, ~/.codex/skills, ~/.agents/skills
                                 (those that exist) [--dest DIR ...] [--dry-run] [--force]
-agent-track query totals        JSON on stdout: per-agent totals and last ingest time
-agent-track query recent        JSON on stdout: latest sessions [--limit N]
+agent-track query totals        JSON on stdout, per-agent totals and last ingest time
+agent-track query recent        JSON on stdout, latest sessions [--limit N]
 agent-track adapter check PATH  validate an adapter (.py file or module:Class) [--home FIXTURE_DIR] [--limit N] [--json]
 ```
 
-`serve` options: `--host` (default `127.0.0.1`), `--port` (default `3874`), `--allow-remote`. `--db PATH` is a top-level flag, so write `agent-track --db PATH serve`. Config is `config.toml` in the OS config directory, and `AGENT_TRACK_*` environment variables override it. Only files whose size or mtime changed are reparsed, so a no-change pass takes well under a second. `POST /api/ingest` (or the Ingest now button) runs a pass on demand. There is no MCP server; the CLI is the tool.
+`serve` options are `--host` (default `127.0.0.1`), `--port` (default `3874`) and `--allow-remote`. `--db PATH` is a top-level flag, so write `agent-track --db PATH serve`. Config is `config.toml` in the OS config directory, and `AGENT_TRACK_*` environment variables override it. Only files whose size or mtime changed are reparsed, so a no-change pass takes well under a second. `POST /api/ingest` (or the Ingest now button) runs a pass on demand. There is no MCP server. The CLI is the tool.
+
+## Privacy and security
+
+The store holds prompt text, tool names and token counts taken from your agents' session files. Treat the database as sensitive.
+
+- `serve` binds `127.0.0.1` by default and only answers requests whose `Host` header is a loopback name on the served port. This blocks DNS rebinding.
+- `POST` requests with a cross-origin `Origin` header are refused.
+- A non-loopback `--host` requires `--allow-remote` and prints a warning that the data includes prompt text. Never expose the server to a network you do not trust.
+- The Machine sampler never reads command lines or environments, and never opens other users' processes.
+
+## Adding an agent
+
+OpenCode, Pi, Gemini and other tools are not built yet. An adapter is one file under `src/agenttrack/adapters/` that implements the `Adapter` contract in [docs/design.md](docs/design.md). Your agent can write it. `agent-track skill install` installs the bundled `agent-track-adapter-author` skill, which walks through it. Third parties can ship an adapter as a package that registers an entry point in the group `agent_track.adapters`. Validate any adapter with `agent-track adapter check <path>`.
 
 ## API
 
@@ -149,7 +181,18 @@ pnpm lint
 pnpm dev       # hot reload, proxies /api to 127.0.0.1:3874; run `agent-track serve` alongside
 ```
 
-The frontend is Vite, React, TypeScript, Tailwind and shadcn/ui. The Inter font is bundled, so the page loads nothing from the network. Releases are built by tagging `v*`; the workflow builds the web UI into the wheel and publishes to PyPI.
+The frontend is Vite, React, TypeScript, Tailwind and shadcn/ui. The Inter font is bundled, so the page loads nothing from the network. Releases are built by tagging `v*`. The workflow builds the web UI into the wheel and publishes to PyPI.
+
+### Demo data
+
+`dev/demo_data.py OUT_DIR` writes about two weeks of invented Claude Code, Codex and Grok sessions into a scratch home, using the same on-disk formats the adapters parse. It is deterministic for a seed, uses stdlib only and never reads your real home. On Linux it also starts a few short-lived placeholder processes so live status is real. Use it for screenshots and demos.
+
+```sh
+python3 dev/demo_data.py ~/tmp/demo-home
+HOME=~/tmp/demo-home PYTHONPATH=src python3 -m agenttrack --db ~/tmp/demo-home/db.sqlite serve --port 3999
+```
+
+The Machine view reads the real host, so it is left out of the screenshots.
 
 ## License
 
